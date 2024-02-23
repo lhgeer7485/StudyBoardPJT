@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <style>
+        .font {
+          font-family: 'Gowun Dodum', sans-serif;
+        }
+        
+      </style>
+    {% endblock css %}
+{% block content %}
+
+<hr>
+
+
+{#카드#}
+<br>
+<div class="border bg-dark.bg-gradient p-3 rounded-5">
+
+  <div>
+    {% comment %} 임시로 적용해본 animate.css {% endcomment %}
+    <h1 class="font text-light mx-3 mt-3 animate__animated animate__bounce">Today's challenge
+      <img src="{% static "planet10.png" %}" alt="planet10" height="40px">
+    </h1>
+    {% comment %} <hr class="border border-danger border-2 opacity-50"> {% endcomment %}
+    <p class="placeholder-glow">
+      <span class="placeholder col-12 bg-danger placeholder-xs" ></span>
+    </p>
+  
+    <!-- 모달버튼 -->
+    {% comment %} <button type="button" class="font btn btn-danger" id="btn_cursor" data-bs-toggle="modal" data-bs-target="#exampleModal">부수환 일해라
+    CREATE CHALLENGE
+    </button> {% endcomment %}
+    <div class=' d-flex justify-content-end'>
+    <button type="button" class="font btn btn-danger" id="btn_cursor" data-bs-toggle="modal" data-bs-target="#exampleModal">부수환 일해라
+      
+    </button></div>
+  <!-- 모달버튼 끝 -->
+  
+  
+  </div>  
+
+{% for challenge in challenges %}
+<br>
+  <div class='container'>
+    <div class="card text-white bg-dark mb-3 rounded-3">
+        <div class="card-header">
+          <div class='d-flex justify-content-between'>
+            <h3 class="my-3 font ">Challenge</h3>
+            {% if challenge.is_today == 1 %}
+            <img src="{% static "logo_on.png" %}" alt="" height='30px' width='auto' class="my-3">
+            {% else %}
+            <img src="{% static "logo_off.png" %}" alt="" height='30px' width='auto' class="my-3">
+
+            {% endif %}
+          </div>
+        </div>
+        <div class="card-body my-3">
+          {% comment %} 여기 추가 challenge.is_today가 1이면 on 아니면 off {% endcomment %}
+          <h5 class="card-title fw-bold font">{{ challenge.title }}</h5> 
+          <p class="card-text font">{{challenge.rank}}-{{ challenge.problem }}번</p>
+          <a href="{% url "challenges:detail" challenge.pk%}" class="font btn btn-warning text-dark mouse" >Go Challenge</a>
+        </div> 
+    </div>
+  </div>
+{% endfor %}
+</div>
+{#카드끝#}
+
+
+<br>
+
+
+{#페이지네이션#}
+<nav aria-label="Page navigation example" >
+  <div class="">
+    <ul class="pagination justify-content-center ">
+      {% if challenges.has_previous %}
+        <li class="page-item">
+          <a class="page-link text-secondary bg-dark border-0" href="?page={{ challenges.previous_page_number }}">&laquo;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link text-secondary bg-dark border-0" href="#" tabindex="-1" aria-disabled="True">&laquo;</a>
+        </li>
+      {% endif %}
+      {% for i in challenges.paginator.page_range %}
+        {% if challenges.number == i %}
+          <li class="page-item active text-light bg-dark border-0" aria-current="page">
+            <span class="page-link text-light bg-dark border-0">
+              {{ i }}
+              <span class="sr-only"></span>
+            </span>
+          </li>
+        {% else %}
+          <li class="page-item text-secondary bg-dark border-0"><a class="page-link text-secondary bg-dark border-0" href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if challenges.has_next %}
+        <li class="page-item">
+          <a class="page-link text-secondary bg-dark border-0" href="?page={{ challenges.next_page_number }}">&raquo;</a>
+        </li>
+      {% else %}
+        <li class="page-item disabled">
+          <a class="page-link text-secondary bg-dark border-0" href="#" tabindex="-1" aria-disabled="True">&raquo;</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+{#페이지네이션 끝#}
+
+
+
+<!-- 모달 구현 -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content card mx-3 mt-n5 shadow-lg" style="">
+      <div class="card-body modal-body">
+        <button type="button" class="btn-close" id="btn_cursor" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h4 class="card-title mb-3 text-primary text-uppercase">Make Challenge</h4>
+        <form action='{% url "challenges:index" %}' method ='POST'>
+          {% csrf_token %}
+          <div class="row">
+            <div class="col">
+              {{ form.as_p }}
+            </div>
+            <div>
+              <br>
+              <button type="submit" id="btn_cursor" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 모달 구현 끝 -->
+{% endblock content %}

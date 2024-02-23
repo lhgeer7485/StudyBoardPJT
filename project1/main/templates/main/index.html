@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+<style>
+  .font {
+    font-family: 'Gowun Dodum', sans-serif;
+  }
+</style>
+{% endblock css %}
+{% block content %}
+{% load static %}
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Page</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+  <article class='container my-5'>
+    <div class='callout '>
+      <div class="border border-0 py-5" style="height:300px">
+        <h1 class="font_style text-light mx-3 mt-3 animate__animated animate__bounceInRight">
+          <img src="{% static "planet4.png" %}" alt="moon" height="70px">
+          STUDY LOG
+          <img src="{% static "planet4.png" %}" alt="moon" height="70px">
+        </h1>
+          <h3 class='font_sub_style text-light m-3 animate__animated animate__bounceInRight animate__delay-1s'>Welcome To Visit Our Site</h3>
+      </div>
+    </div>
+  </article>
+</head>
+<body>
+<div class='container'>
+  <div class='row'>
+      {% comment %} Plan board {% endcomment %}
+      <div class-'col-12'>
+        <div class="border border-2 border-light rounded-3 p-2 my-2 border-opacity-75 " >
+          <h2 class="mx-2 font card-title lh-lg text-light"> New Plan Posting <img src="{% static "planet8.png" %}" height='30px' alt=""></h2>
+          <div class="border border-2 border-light rounded-3 p-3 m-2 border-opacity-75 ">
+            <div class='text-light font'>
+              {% if plans|length == 0%}
+                <td class='' colspan='5'>
+                  <p class=' text-light'>작성된 플랜이 없습니다.</p></td>
+              {% else %}
+              <ol class="">
+                {% for plan in plans %}
+                  <a href="{% url 'plans:detail' plan.pk %}">
+                    <div class = 'd-flex justify-content-between align-items-center'>
+                      <p class=' text-light fw-bold'>{{ plan.title }}</p>
+                      <p class='text-light'>{{ plan.user.username }} | {{ plan.created_at | date:"Y-m-d H:i"}}</p>
+                    </div>
+                    <hr class="my-2 border border-light border-1 opacity-50">
+                  </a>
+                {% endfor %}
+              </ol>
+              {% endif %}
+            </div>
+          </div>  
+        </div>
+      </div>
+      <div class-'col-12'>
+        <div class="border border-2 border-light rounded-3 p-2 my-2 border-opacity-75 " >
+          <h2 class="mx-2 font card-title lh-lg text-light"> Algorithm Posting <img src="{% static "planet8.png" %}" height='30px' alt=""></h2>
+          <div class="border border-2 border-light rounded-3 p-3 m-2 border-opacity-75 ">
+            <div class='text-light font'>
+              {% if algorithms|length == 0 %}
+                <td class='' colspan='5'>
+                  <p class=' text-light'>작성된 게시물이 없습니다.</p></td>
+              {% else %}
+              <ol class="">
+                {% for algorithm in algorithms %}
+                  <a href="{% url 'algorithms:index' %}">
+                    <div class = 'd-flex justify-content-between align-items-center'>
+                      <p class=' text-light fw-bold'>{{ algorithm.problem.name }}</p>
+                      <p class='text-light'>{{ algorithm.user.username }} | {{ algorithm.created_at | date:"Y-m-d H:i"}}</p>
+                    </div>
+                    <hr class="my-2 border border-light border-1 opacity-50">
+                  </a>
+                {% endfor %}
+              </ol>
+              {% endif %}
+            </div>
+          </div>  
+        </div>
+      </div>
+      <div class-'col-12'>
+        <div class="border border-2 border-light rounded-3 p-2 my-2 border-opacity-75 " >
+          <h2 class="mx-2 font card-title lh-lg text-light"> New Issue Posting <img src="{% static "planet8.png" %}" height='30px' alt=""></h2>
+          <div class="border border-2 border-light rounded-3 p-3 m-2 border-opacity-75 ">
+            <div class='text-light font'>
+              {% if plans|length == 0%}
+                <td class='' colspan='5'>
+                  <p class=' text-light'>작성된 게시물이 없습니다.</p></td>
+              {% else %}
+              <ol class="">
+                {% for issue in issues %}
+                  <a href="{% url 'issues:detail' issue.pk %}">
+                    <div class = 'd-flex justify-content-between align-items-center'>
+                      <p class=' text-light fw-bold'>{{ issue.title }}</p>
+                      <p class='text-light'>{{ issue.user.username }} | {{ issue.created_at | date:"Y-m-d H:i"}}</p>
+                    </div>
+                    <hr class="my-2 border border-light border-1 opacity-50">
+                  </a>
+                {% endfor %}
+              </ol>
+              {% endif %}
+            </div>
+          </div>  
+        </div>
+      </div>
+  </div>
+
+  <div class='row'>
+    <div class='col-8'>
+      <div class="border border-2 border-light rounded p-2 my-2 border-opacity-75 " >
+        <h2 class="mx-2 font card-title lh-lg text-light">Today Challenge <img src="{% static "planet2.png" %}" height='30px' alt=""></h2>
+          <div class="border border-2 border-light rounded p-3 m-2 border-opacity-75 ">
+            <div class='text-light font'>
+              <ol class="">
+                {% for challenge in challenges %}
+                    <a href="{% url 'challenges:index'%}">
+                      <div class = 'd-flex justify-content-between align-items-center'>
+                        <p class=' text-light fw-bold'>{{ challenge.title }}</p>
+                        <p class='text-light'>{{ challenge.created_at | date:"Y-m-d H:i"}}</p>
+                      </div>
+                      <hr class="my-2 border border-light border-1 opacity-50">
+                    </a>
+                {% endfor %}
+              </ol>
+            </div>
+
+          </div>  
+      </div>
+    </div>
+    <div class='col-4'>
+      <div class="border border-2 border-light rounded p-2 my-2 border-opacity-75 ">
+        <h2 class="mx-2 card-title lh-lg text-light">Day 3 <img src="{% static "planet9.png" %}" height='30px' alt=""></h2>
+        <br>
+          <div class="border border-2 border-light rounded p-3 m-2 border-opacity-75">
+          <br>
+          <p class="card-text text-light"></p>
+          </div>  
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+
+</body>
+</html>

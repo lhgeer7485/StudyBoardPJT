@@ -1,0 +1,160 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% comment %} animate.css {% endcomment %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    {% comment %} bootstrap5 {% endcomment %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    {% block css %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+    <style>
+      .font {
+        font-family: 'Gowun Dodum', sans-serif;
+      }
+      
+    </style>
+    {% endblock css %}
+
+
+    {% comment %} 우리가 만든 css {% endcomment %}
+    <link rel="stylesheet" href="{% static "style.css" %}">
+    <div class="container-fluid">
+      <div class="mt-2 fixed-top">
+        <div class="d-flex flex-column flex-items-center p-responsive height-full position-relative z-1">
+          <div class="d-flex justify-content-between">
+            <div>
+              <a class="text-light p-2 fw-bold" style="text-decoration:none" href={% url "main:index" %}>
+                <img src="{% static "main_logo.png" %}"  alt="logo.png" width="auto" height="50"></a>
+              <a class="text-light p-2" style="text-decoration:none" href="{% url "challenges:index" %}" >Today Challenge
+                <img src={% static "logo_medal.png" %} alt="logo_medal.png" width="25" height="25">
+              </a>
+            </div>
+            <div>
+              <a class="btn logo" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                <img src="{% static "toggle.png" %}" alt="toggle" width="25" height="20">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+          <h3 class="offcanvas-title border-bottom border-white" id="offcanvasExampleLabel">Study Group Board</h3>
+          <button type="button" id="btn_cursor" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <div class="dropdown mt-3">
+                  {% if request.user.is_authenticated %}
+                  <div class="p-3 bg-light bg-opacity-10 border border-0">
+                    <h4><img src="{% static 'Rank/'|add:request.user.beakjoon_rank|add:'.png' %}" width="30" height="32">
+                      <a >{{ user.username }}</a>님</h4>
+                    <a class="p-2 btn btn-outline-light btn-sm" href="{% url "accounts:profile" request.user.pk %}">MY PAGE</a>
+                    <a class="p-2 btn btn-outline-light btn-sm" href="{% url "accounts:logout" %}" method='POST'>LOGOUT</a>
+                    <a class="p-2 btn btn-outline-light btn-sm" href="{% url "accounts:update" %}" method='POST'>회원정보수정</a>
+                    <br>
+                    {% else %}
+                    <a class="p-2 btn btn-outline-light btn-sm" href="{% url "accounts:signup" %}">SIGNUP</a>
+                    <a class="p-2 btn btn-outline-light btn-sm" href="{% url "accounts:login" %}">LOGIN</a>
+                    <br>
+                    {% endif %}
+                  </div>
+                  <br>
+                  <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                      <a class="nav-link active fs-4 " aria-current="page" href={% url "main:index" %}>
+                        <div>
+                          <img src={% static "Base/home.png" %} alt="" height="20px" class="mx-2">
+                          Home
+                        </div>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link fs-4"  href="{% url "plans:index" %}">
+                        <div>
+                          <img src={% static "Base/issue.png" %} alt="" height="20px" class="mx-2">
+                          Plan
+                        </div>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link fs-4" href={% url "algorithms:index" %}>
+                          <div>
+                            <img src={% static "Base/algorithm.png" %} alt="" height="20px" class="mx-2">
+                            Algorithm
+                          </div>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link fs-4" href="{% url "issues:index" %}">
+                          <div>
+                            <img src={% static "Base/thinking.png" %} alt="" height="20px" class="mx-2">
+                            Issue
+                          </div>
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                      
+                      <div class="dropdown mt-3">
+                      <a class="nav-link dropdown-toggle fs-4" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          <img src={% static "Base/user.png" %} alt="" height="20px" class="mx-2">
+                          Member
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-dark">
+                        {% for person in request.user.users %}
+                          <li><a class="dropdown-item" href="{% url "accounts:profile" person.pk %}">{{ person.username }}</a></li>
+                        {% endfor %}
+                        <li>
+                          <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="{% url "accounts:manage_board" %}">Manage Board</a></li>
+                      </ul>
+                    </div>
+                    </li>
+
+                
+
+                  </ul>
+                  {% comment %} <form class="d-flex mt-3" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-success" id="btn_cursor" type="submit">Search</button>
+                  </form> {% endcomment %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </head>
+<body>
+      <br>
+      <div >
+        <div class='m-5'>
+          {% block content %}
+          {% endblock content %}
+        </div>
+        </div>
+       
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script> 
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      {% if request.user.is_authenticated %}
+        <script>
+          axios({
+            method: 'get',
+            url: '{% url "algorithms:user_crawling" request.user.pk %}',
+          })
+        </script>
+      {% endif %}
+      
+  </body>
+</html>

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <style>
+    .font {
+      font-family: 'Gowun Dodum', sans-serif;
+    }
+    .rank {
+      height: 100px;
+    }
+  </style>
+{% endblock css %}
+
+{% block content %}
+<div class='container border bg-dark.bg-gradient p-3 rounded-5'>
+  <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex">
+      if 
+      <a href="https://solved.ac/profile/{{ person.beakjoon_nickname }}"><img src="{% static 'Rank/'|add:person.beakjoon_rank|add:'.png' %}" width="60" height="60" alt="asd"></a>
+      
+      <h1 class='font fw-bold text-white'><a href="https://solved.ac/profile/{{ person.beakjoon_nickname }}">{{ person.username }}</a>님이 푼 문제 : 총 {{ person.solved_problems.all.count }}문제</h1>
+    </div>
+    <a href="{% url "algorithms:solved_crawling" person.pk %}"><button class="btn btn-light text-dark mouse fw-bold" type="button">크롤링</button></a>
+  </div>
+
+{% comment %} 그래프 그리기  {% endcomment %}
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  <div style='background-color:white;'>
+  <div style="width:500px">
+    <canvas id="myChart"></canvas>
+  </div>
+  </div>
+  <script>
+    var ctx = document.getElementById("myChart").getContext("2d");
+    var myChart = new Chart(ctx, {
+      type: "radar",
+      data: {
+        labels: ["# data structure", "# dp", "# greedy", "# bruteforcing", "# graphs", "# string"],
+        datasets: [
+          {
+            label: "[ Algorithm Category ]",
+            data: {{ graph_list }},
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(255, 206, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(255, 159, 64, 0.2)",
+            ],
+            borderColor: [
+              "#FF0040"
+
+            ],
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        maintainAspectRatio: true, // default value. false일 경우 포함된 div의 크기에 맞춰서 그려짐.
+        scale: {
+          
+          pointLabels: {
+            fontSize: 16, // Adjust the font size here
+          }
+        },
+      },
+      
+    });
+  </script>
+
+
+  
+  
+  {% comment %} 내가 푼 문제 목록 {% endcomment %}
+  <table class='table table-hover table-responsive table-dark rounded-pill'>
+    <thead>
+      <tr>
+        <th class='font fw-bold col-md-1 fs-5' scope="col">번호</th>
+        <th class='font fw-bold col-md-4 fs-5' scope="col">문제 제목</th>
+        <th class='font fw-bold col-md-6 fs-5' scope="col">분류</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+      {% for solved_problem in person.solved_problems.all %}
+      <tr>
+        <td>{{ solved_problem.problem_num }}</td>
+        <td>
+          <img src="{% static 'Rank/'|add:solved_problem.rank|add:'.png' %}" width="27" height="27" alt="asd">
+          <a href="https://www.acmicpc.net/problem/{{ solved_problem.problem_num }}"> {{ solved_problem.name }}</a>
+        </td>
+        <td>
+          {% for class in solved_problem.classes.all %}
+          <span><a href="https://www.acmicpc.net/problemset?sort=ac_desc&algo={{ class.ProblemClass_num }}">{{ class.name }}</a></span>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+  
+  
+  
+  
+  
+  
+  
+
+</div>
+{% endblock content %}

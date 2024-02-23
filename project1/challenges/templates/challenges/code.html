@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+ {% load static %}
+{% block css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa&family=Russo+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href={% static "codemirror/rib/codemirror.css" %}>
+    <script src={% static "codemirror/rib/codemirror.js" %}></script>
+    <script src={% static "codemirror/mode/python/python.js" %}></script>
+    <link rel="stylesheet" href={% static "/codemirror/theme/yonce.css" %}>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <style>
+        .font_title {
+            font-family: 'Comfortaa', sans-serif;
+            {% comment %} font-family: 'Russo One', sans-serif; {% endcomment %}
+          }
+        .py-error{
+            height: 100px;
+        }
+        .font {
+            color: white;
+        }
+        .divheight {
+            height: 350px;
+            
+        }
+        .hiddiv{
+            display:none;
+        }
+        .makeauto {
+            height: 200px;
+            background-color: black;
+            color:white;
+        }
+        .py-terminal {
+            height: 200px;
+        }
+        .container {
+            height: auto;
+            
+        }
+    </style>
+{% endblock css %}
+
+    {% block content %}
+    <div class='container' >
+        <div class='border bg-dark.bg-gradient p-3 rounded-5'>
+        <h1 class='font font_title m-3'>Create Source Code
+
+            <img src="{% static "Memo/memo1.png" %}" alt="" height="40px">
+        </h1>
+        <form action="{% url "challenges:code" challenge.pk%}" method='POST'>
+            {% csrf_token %}
+            <div class="d-flex justify-content-end">
+                <button class="btn m-2 btn-lg  border-3 font_title border border-success text-success fw-bold" type="submit"> Save</button>
+                <button class="btn m-2 btn-lg  border-3 font_title border border-warning text-warning fw-bold" id="runner">Run</button>
+            </div>
+            <textarea name="editor" id="editor" cols="30" rows="10"></textarea>
+            
+        </form>
+
+        <br>
+        <div id="console" class="divheight hiddiv">
+        </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        
+        
+        var editor = CodeMirror.fromTextArea(
+            document.getElementById('editor'),{
+                mode: 'python',
+                theme: 'yonce',
+                lineNumbers: true,
+                
+            }
+        )
+        const runner = document.querySelector('#runner')
+        const temp = document.querySelector('#temp')
+        runner.addEventListener('click',function(event){
+            const ondiv = document.querySelector('.hiddiv')
+            if(ondiv === null){}
+            else {ondiv.classList.remove('hiddiv')}
+            prev = document.querySelector('py-script')
+            const preverror = document.querySelector('.py-error')
+            if (preverror===null){}
+            else {
+                preverror.remove()
+            }
+            if (prev===null){}
+            else {
+                prev.remove()
+                const prevconsole = document.querySelector('.py-terminal')
+                
+                
+                prevconsole.textContent = ''
+            }
+            event.preventDefault()
+
+            const py = document.createElement('py-script')
+            py.textContent = editor.getValue()
+            console.log(editor.getValue())
+            const section = document.querySelector('#console')
+            
+            const error = document.querySelector('.py-error')
+    
+            const success = document.querySelector('.py-terminal')
+            
+            
+            section.appendChild(py)
+            section.appendChild(success) 
+            
+
+           
+        })
+       
+        {% comment %} const formTag = document.querySelector('#code-form')
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+        console.log(csrftoken)
+        formTag.addEventListener('click', function (event) {
+            const codeData = editor.getValue()
+        
+            const data = new FormData()
+            data.append('content',codeData)
+            axios({
+                method:'post',
+                url: '{% url "challenges:code" challenge.pk%}',
+                headers: {'X-CSRFToken': csrftoken},
+                data,
+            })
+            .then((response)=>{
+                console.log(response.data)
+            })
+        }) {% endcomment %}
+    </script>
+ {% endblock content %}

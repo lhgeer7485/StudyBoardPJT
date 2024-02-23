@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <style>
+    .font {
+      font-family: 'Gowun Dodum', sans-serif;
+    }
+
+    .profile {
+      max-width: 95.5px;
+      max-height: 95.5px;
+      border-radius: 50%;
+  }
+  </style>
+{% endblock css %}
+
+{% block content %}
+<div class="container  text-white border bg-dark.bg-gradient p-3 rounded-5 font fw-bold">
+  <h1 class="text-center">Member List</h1>
+  <hr>
+  <div>
+  <div class="container text-center">
+    <div class="row"style="margin-right: 7%">
+      {% for person in people %}
+        <div class="card text-bg-dark rounded-5 col-md-3 offset-md-1 mt-5 mb-2">
+          <div class="card-body">
+            {% if person.image %}  
+              <div class="text-center">
+                <img src="{{ person.image.url }}" alt="프로필" class="profile rounded-circle card-img-top">
+              </div>
+            {% else %}
+              <p class="mt-5 mb-5">프로필 사진이 없습니다.</p>
+            {% endif %}
+            <div class="text-center">
+            <p>
+              <h4><img src="{% static 'Rank/'|add:person.beakjoon_rank|add:'.png' %}" width="20" height="20"> <span>{{ person.username }}님</span></h4>
+              {% comment %} <h5>{{ person.username }}님</h5> {% endcomment %}
+            </p>
+            <form action="{% url "accounts:profile" person.pk %}" method='POST'>
+              {% csrf_token %}
+              <button type="submit" id="btn_cursor" class="btn btn-light btn-outline-light text-dark justify-content-between"> 프로필 </button>
+            </form>
+            </div>
+            {% comment %} <a href="{% url "accounts:profile" person.pk %}" class="btn btn-primary">프로필 보러가기</a> {% endcomment %}
+          </div>          
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% comment %} <div>
+    <ul>
+      {% for user in person %}
+      <div>
+        <p>
+          <h4><img src="{% static 'Rank/'|add:request.user.beakjoon_rank|add:'.png' %}" width="20" height="20">
+          <a href="{% url "accounts:profile" user.pk %}">{{ user.username }}</a>님
+        </p>
+      </div>
+      {% endfor %}
+    </ul>
+  </div> {% endcomment %}
+</div>
+{% endblock content %}

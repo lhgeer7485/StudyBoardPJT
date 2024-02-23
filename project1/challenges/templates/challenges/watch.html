@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+
+
+    <link rel="stylesheet" href={% static "codemirror/rib/codemirror.css" %}>
+    <script src={% static "codemirror/rib/codemirror.js" %}></script>
+    <script src={% static "codemirror/mode/python/python.js" %}></script>
+    <link rel="stylesheet" href={% static "/codemirror/theme/xq-dark.css" %}>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js"></script>
+    <style>
+    .cant{
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none
+    }
+    .box{
+        color : white;
+    }
+    .makeInline {
+        display : inline-block;
+    }
+
+    .copy_btn {
+        position: absolute;
+        top: 180px;
+        right: 60px;
+        z-index:2;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+{% endblock css %}
+
+
+{% block content %}
+
+    <div class='box'>
+        <br>
+        <div class="d-flex">
+        <h1 style="margin:0" class='makeInline'>{{code.author.username}}님의 코드 </h1>
+        
+    </div>
+        <hr style="margin-top:5px"></hr>
+            <img id="copybtn" class="copy_btn" style="width:50px" src="{% static "copy.png" %}" alt="">
+            <div id="noneClick">
+            <textarea  style="border: 1px solid white; border-radius:10px; height:500px; " class='container' name="editor" id="editor" cols="30" rows="10">{{code.content}}</textarea>
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        const editor = CodeMirror.fromTextArea(
+            document.getElementById('editor'),{
+                mode: 'python',
+                theme: 'xq-dark',
+                lineNumbers: true,
+                readOnly:true,
+                          
+            }
+        )
+        var repeat = 'single'
+        const pre = document.querySelector('.CodeMirror-scroll')
+        const measures = document.querySelectorAll('.CodeMirror-measure')
+        for(let i=0; i<measures.length;i++){
+            measures[i].setAttribute('draggable',false)
+            measures[i].classList.add('cant')
+        }
+        const cursor = document.querySelector('.CodeMirror-cursors')
+        cursor.setAttribute('draggable',false)
+        cursor.classList.add('cant')
+        const cc= document.querySelector('#noneClick > div > div.CodeMirror-scroll > div.CodeMirror-sizer > div > div > div > div:nth-child(3)')
+        cc.setAttribute('draggable',false)
+        cc.classList.add('cant')
+        pre.setAttribute('draggable',false)
+        pre.addEventListener('drag',(event)=>{
+            event.preventDefault()
+        })
+        editor.setOption("configureMouse",(cm,repeat,event)=>{
+            
+            return{unit:'char', extend:true,moveOnDrag:false}
+        })
+        editor.setOption("dragDrop",true)
+        
+        const copyBtn = document.querySelector('#copybtn')
+        copyBtn.addEventListener('mouseover',function(event){
+            copyBtn.classList.add('animate__animated')
+            copyBtn.classList.add('animate__pulse')
+            copyBtn.classList.add('animate__infinite')
+        })
+        copyBtn.addEventListener('mouseleave',function(event){
+            copyBtn.classList.remove('animate__animated')
+            copyBtn.classList.remove('animate__pulse')
+            copyBtn.classList.remove('animate__infinite')
+        })
+        copyBtn.addEventListener('click',function(event){
+            const check = confirm('해당 코드를 클립보드에 목사하시겠습니까?')
+            if(check){
+            const copyText = document.querySelector('#editor')
+            const texter = document.createElement('textarea')
+            document.body.appendChild(texter)
+            texter.textContent = copyText.textContent
+            texter.select()
+            document.execCommand('copy')
+            document.body.removeChild(texter)
+            }    
+        })
+  
+    </script>
+{% endblock content %}

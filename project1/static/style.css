@@ -1,0 +1,38 @@
+  .container {
+    display : flex;
+    flex-direction: column;
+  }
+  a,a:link{
+    /* 링크태그 커서 설정 원하는 이미지 경로 url에 추가시 변경됨 */
+    cursor: url(test_mouse.png) 2 2, auto;
+
+  }
+  #btn_cursor {
+    /* 버튼태그 커서이미지 변경 태그선택자 및 클래스 선택자로 안되는 이슈로 아이디 선택자로 설정해줘야함 */
+    /* 커서 설정 원하는 이미지 경로 url에 추가시 변경됨 */
+    cursor: url(test_mouse.png) 2 2, auto;
+  }
+  body {
+    min-height: 100vh;
+    /* background: lightgray; */
+    background :url('background3.jpg') ;
+    background-size : cover;
+    cursor: url(test_mouse.png) 2 2, auto;
+  }
+
+  .callout {
+    grid-area: callout;
+    align-self: center;
+    justify-self: center;
+    text-align: center;
+}
+
+.font_style {
+  font-family: 'Russo One', sans-serif;
+  font-size: 100px;
+}
+
+.font_sub_style {
+  font-family: 'Russo One', sans-serif;
+  font-size: 30px;
+}

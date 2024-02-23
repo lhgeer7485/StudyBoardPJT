@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style type="text/css">
+        tbody > tr {cursor: pointer;}
+        table {
+            border-radius: 10px;
+        }
+        div {
+            border-radius: 10px;
+        }
+        .font {
+          font-family: 'Gowun Dodum', sans-serif;
+        }
+    </style>
+{% endblock css %}
+
+{% block content %}
+
+
+
+<div class='container border bg-dark.bg-gradient p-3 rounded-5'>
+    <div class='d-flex justify-content-between'>
+      <h1 class='font fw-bold text-white animate__animated animate__headShake'>Algorithms</h1>
+      <div class='d-flex flex-column justify-content-center'>
+        <form action="{% url "algorithms:create" %}" method="POST">
+          {% csrf_token %}
+          <label style="color:white" for="problem_num">문제 번호</label>
+          <input type="text" name="problem_num" id="problem_num">
+          <input type="submit" value="제출">
+        </form>
+      </div>
+    </div>
+    <table class='table table-hover table-responsive table-dark rounded-pill'>
+        <thead>
+            <tr>
+                <th class='font fw-bold col-md-2 text-center fs-3' scope="col">이름</th>
+                <th class='font fw-bold col-md-4 text-center fs-3' scope="col">알고리즘 제목</th>
+                <th class='font fw-bold col-md-1 text-center fs-3' scope="col">문제 등급</th>
+                <th class='font fw-bold col-md-5 text-center fs-3' scope="col">문제 분류</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            {% for user in users_inpo %}
+            <tr onclick="location.href=''">
+                <td class='text-center'><img src="{% static 'Rank/'|add:user.user.beakjoon_rank|add:'.png' %}" width="27" height="27" alt="asd"><a href="{% url "accounts:profile" user.user.pk %}">{{ user.user.username }}</a></td>
+                {% if user.problem %}
+                  <td class='text-center'>{{ user.problem.name }}</td>
+                  <td class='text-center'>{{ user.problem.rank }}</td>
+                  <td class='text-center'>
+                    {% for class in user.problem.classes.all %}
+                    <span>{{class.name}}</span>
+                    {% endfor %}
+                  </td>
+                {% else %}
+                  <td colspan='4' class="text-center"> 오늘 아직 알고리즘을 제출하지 않았습니다.</td>
+                {% endif %}
+                
+                
+                
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+{% endblock content %}
+

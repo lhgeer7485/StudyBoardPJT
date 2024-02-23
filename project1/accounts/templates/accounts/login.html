@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p class="placeholder-glow">
+    <span class="placeholder col-12 bg-primary placeholder-xs"></span>
+</p>
+<div  >
+    <div class="d-flex justify-content-center ">
+    <h1 class="btn btn-primary disabled placeholder col-4" aria-disabled="true">LOGIN</h1>
+    </div>
+    <div class="d-flex justify-content-center ">
+    <form action="{% url 'accounts:login' %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="SUBMIT" class="d-flex justify-content-center ">
+    </form>
+    <br>
+    </div>
+</div>
+    <p class="placeholder-glow">
+    <span class="placeholder col-12 bg-primary placeholder-xs"></span>
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <div class='container border bg-dark.bg-gradient p-3 rounded-5'>
+    <h1 class='fw-bold text-white'>Login</h1>
+    <form action="{% url "accounts:login" %}" method="post" class="form-horizontal">
+      {% csrf_token %}                                     
+      <input type="hidden" name="action" value="update">   
+      <table class="table table-striped table-bordered table-dark">
+        <tr>
+          <th class='align-middle'>아이디</th>                                    
+          <td><input type="text" class="form-control" name="title"></td>
+        </tr>
+        <tr>
+          <th class='align-middle'>작성자</th>                                   
+          <td>{{ request.user }}</td>
+        </tr>
+        <tr>
+        <tr>
+          <th class='align-middle'>사진 업로드</th>                                    
+          <td><input type="file" rows="10" class="form-control" name="image"></input></td>
+        </tr>
+        <tr>
+          <th class='align-middle'>내용</th>                                    
+          <td><textarea rows="10" class="form-control" name="content"></textarea></td>
+        </tr>
+      </table>
+      <div class='d-flex justify-content-between'>
+        <a href="{% url "plans:index" %}"><button class="btn btn btn-light text-dark mouse fw-bold" type="button">뒤로가기</button></a>
+        <button class="btn btn-light text-dark mouse fw-bold" type="submit">저장</button>
+      </div>
+      </form>
+  
+  </div> {% endcomment %}
+
+
+{% endblock content %}

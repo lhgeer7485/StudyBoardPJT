@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <style>
+    .font {
+      font-family: 'Gowun Dodum', sans-serif;
+    }
+  </style>
+{% endblock css %}
+{% block content %}
+<div class="container border bg-dark.bg-gradient p-3 rounded-5 font fw-bold text-white font">
+    <h1 class="animate__animated animate__headShake">회원정보 수정</h1>
+    <form action="{% url "accounts:update" %}" method="POST" enctype="multipart/form-data"> 
+        {% csrf_token %}
+        <p class="text-white-50 bg-dark">{{ form.as_p }}</p>
+        <div class='align-middle'>
+            <p>프로필 사진 업로드</p>
+            {{ form.image }}                        
+            <input type="file" rows="10" id="btn_cursor" class="form-control" name="image"></input>
+        </div>
+        <button type="submit" id="btn_cursor" class="btn btn-outline-light me-3 mt-3 rounded-5"> 수정하기 </button>
+        <a href="{% url "accounts:profile" user.pk %}" class="btn btn-outline-light me-3 mt-3 rounded-5">뒤로가기</a>
+    </form>
+</div>
+{% endblock content %}

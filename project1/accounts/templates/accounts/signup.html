@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+{% endblock css %}
+
+
+
+{% block content %}
+{% comment %} <p class="placeholder-glow">
+    <span class="placeholder col-12 placeholder-xs"></span>
+</p>
+<div class="d-flex justify-content-center ">
+    <h1 class="btn btn-secondary disabled placeholder col-4" aria-disabled="true">SIGNUP</h1>
+</div>
+    <form action="{% url 'accounts:signup' %}" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit">
+    </form>
+<p class="placeholder-glow">
+    <span class="placeholder col-12 placeholder-xs"></span>
+</p> {% endcomment %}
+
+
+    <div class="panel panel-default registration">
+        <div class="panel-heading">
+            가입하기
+        </div>
+        <div class="panel-body">
+            <form action="." method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-actions">
+                    <button class="btn btn-primary btn-large" id="btn_cursor" type="submit">가입하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+{% endblock content %}

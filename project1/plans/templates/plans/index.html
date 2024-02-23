@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style type="text/css">
+        tbody > tr {cursor: pointer;}
+        table {
+            border-radius: 10px;
+        }
+        div {
+            border-radius: 10px;
+        }
+        .font {
+          font-family: 'Gowun Dodum', sans-serif;
+        }
+    </style>
+{% endblock css %}
+
+{% block content %}
+
+
+
+<div class='container border bg-dark.bg-gradient p-3 rounded-5'>
+    <h1 class='font fw-bold text-white animate__animated animate__headShake'>Plan Board
+      {% comment %} <img src="{% static "planet9.png" %}" alt="planet" height='30px' > {% endcomment %}
+    </h1>
+    <table class='table table-hover table-responsive table-dark rounded-pill'>
+        <thead>
+            <tr>
+                <th class='font fw-bold col-md-5 text-center fs-3' scope="col">Content</th>
+                <th class='font fw-bold col-md-3 text-center fs-3' scope="col">Writer</th>
+                <th class='font fw-bold col-md-2 text-center fs-3' scope="col">Upload Date</th>
+                <th class='font fw-bold col-md-1 text-center fs-3' scope="col">Likes</th>
+                <th class='font fw-bold col-md-1 text-center fs-3' scope="col">Views</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            {% if plans|length == 0%}
+                <td class='text-center' colspan='5'>작성된 플랜이 없습니다.</td>
+            {% else %}
+            {% for plan in plans %}
+            <tr onclick="location.href='{% url "plans:detail" plan.pk%}'">
+                <td>{{ plan.title }}</td>
+                {% comment %} <td class='text-center'><img src={% static "logo.png" %} alt="logo_medal.png" width="10" height="12">&nbsp;{{ plan.user.username }}</td> {% endcomment %}
+                <td class='text-center'><img src="{% static 'Rank/'|add:plan.user.beakjoon_rank|add:'.png' %}" width="27" height="27" alt="asd">&nbsp;<a href="{% url "accounts:profile" plan.user.pk %}">{{ plan.user.username }}</a></td>
+                <td class='text-center'>{{ plan.created_at | date:"Y-m-d H:i"}}</td>
+                <td class='text-center'>{{ plan.like_users.all | length }}</td>
+                <td class='text-center'>{{ plan.count }}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+
+        </tbody>
+    </table>
+    {% comment %} <a href="{% url "plans:create" %}" class='btn btn btn-light text-dark mouse fw-bold btn-block col-3' type='button'>새 플랜 작성</a> {% endcomment %}
+    <div class="d-flex justify-content-between">
+      <div>
+        <form method="GET" action="{% url "plans:index" %}" id="sort">
+          <div class="col-4 d-flex">
+            <select name="sort" id="sort" type="submit">
+              <option value="recently" id="recently" type="submit">최신순</option>
+              <option value="unRecently" id="unRecently" type="submit">오래된순</option>
+              <option value="views" id="likes" type="submit">조회순</option>
+              {% comment %} <option value="comments" id="comments">댓글순</option> {% endcomment %}
+            </select>
+            <button class="ms-2 text-light btn btn-secondary font" type="submit" value="">정렬</button>
+          </div>
+      </div>
+      <a href="{% url "plans:create" %}" enctype='multipart/form-data'><button class='text-light btn btn-secondary font' id="btn_cursor" type='button'>New Plan</button></a>
+    </div>
+
+
+
+
+    <div class="row mt-2 align-self-center">
+        <div class="col-12">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              {% if plans.has_previous %}
+                <li class="page-item">
+                  <a class="page-link text-secondary bg-dark border-0" href="?page={{ plans.previous_page_number }}">&laquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link text-secondary bg-dark border-0" href="#" tabindex="-1" aria-disabled="True">&laquo;</a>
+                </li>
+              {% endif %}
+              {% for i in plans.paginator.page_range %}
+                {% if plans.number == i %}
+                  <li class="page-item active text-light bg-dark border-0" aria-current="page">
+                    <span class="page-link text-light bg-dark border-0">
+                      {{ i }}
+                      <span class="sr-only"></span>
+                    </span>
+                  </li>
+                {% else %}
+                  <li class="page-item text-secondary bg-dark border-0"><a class="page-link text-secondary bg-dark border-0" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+              {% endfor %}
+              {% if plans.has_next %}
+                <li class="page-item">
+                  <a class="page-link text-secondary bg-dark border-0" href="?page={{ plans.next_page_number }}">&raquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link text-secondary bg-dark border-0" href="#" tabindex="-1" aria-disabled="True">&raquo;</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+<script type="text/javascript">
+  $(document).ready(function(){
+      $("select[name=sort]").change(function () {
+      $("#sort").submit();
+
+      });
+  });
+</script>

@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <style>
+        .font {
+          font-family: 'Gowun Dodum', sans-serif;
+        }
+
+      </style>
+    {% endblock css %}
+
+{% block content %}
+    
+    <div class='container border bg-dark.bg-gradient p-3 rounded-5'>
+        <a href="{% url "plans:index" %}">
+            <h1 class='font fw-bold text-white'>Plan BOARD</h1>
+        </a>
+
+        <table class="table table-striped table-bordered table-dark">
+            <tr>
+                <th class='font col-md-2 align-middle fs-1' colspan='2'>{{ plan.title }}</th>
+            </tr>
+            <tr>
+                <div>
+                    <td class='col-md-12 d-flex justify-content-between' colspan='2'>
+                        <div>
+                            {% comment %} <img src={% static "logo.png" %} alt="logo_medal.png" width="10" height="12">&nbsp;{{ plan.user.username }} &nbsp;|&nbsp; {% endcomment %}
+                            <img src="{% static 'Rank/'|add:plan.user.beakjoon_rank|add:'.png' %}" width="27" height="27" alt="asd">&nbsp;<a href="{% url "accounts:profile" plan.user.pk %}">{{ plan.user.username }}</a> &nbsp;|&nbsp;
+                            <img src={% static "hit_img.png" %} alt="logo_medal.png" width="18" height="13">&nbsp;<span>{{ plan.count }}</span> &nbsp;|&nbsp;
+                            <img src={% static "comment_img.png" %} alt="logo_medal.png" width="18" height="15">&nbsp;<span id="cnt2">{{ plan.comments.all|length }}</span> &nbsp;|&nbsp;
+                            <img src={% static "like_img.png" %} alt="logo_medal.png" width="15" height="15">&nbsp; <span id="likes-count">{{ plan.like_users.all|length }}</span>
+                        </div>
+                        <div class ='font'>
+                            <img src={% static "time2_img.png" %} alt="logo_medal.png" width="15" height="15">&nbsp;{{ plan.updated_at | date:"Y-m-d H:i" }}&nbsp;&nbsp;
+                        </div>
+                    </td>
+                </div>
+
+            </tr>
+
+            {% if plan.image %}
+            <tr>
+                <td colspan='2'><img src="{{ plan.image.url }} " alt="" width=100% height=100%></td>
+            </tr>
+            {% else %}
+            {% endif %}
+            
+            <tr>
+                
+                <td class='font' colspan='2' style="word-break:break-all">{{ plan.content | linebreaksbr }}</td>
+            </tr>
+        </table>
+        {% if request.user == plan.user %}
+        <div class='d-flex justify-content-between'>
+            <div>
+                {% comment %} <a href="{% url "plans:index" %}"><button class="btn btn btn-light text-dark mouse fw-bold" type="button">뒤로가기</button></a> {% endcomment %}
+                <a class = 'mx-5' href="{% url "plans:index" %}">
+                    <img src="{% static "back.png" %}" alt="back" height="20px">
+                </a>
+            </div>
+            <div>
+                {% comment %} <a href="{% url "plans:likes" plan.pk %}"><button class="btn btn-success mouse fw-bold" type="button"><img src={% static "like_img.png" %} alt="logo_medal.png" width="18" height="20">&nbsp;좋아요</button></a> {% endcomment %}
+                {% comment %} <a class = 'mx-5' href="{% url "plans:likes" plan.pk %}">
+                    <img src={% static "like3_img.png" %} alt="like_medal.png" height="20">
+                </a> {% endcomment %}
+                <a class = 'mx-5 likeA btn' data-plan-id="{{ plan.pk }}">
+                    <img src={% static "like3_img.png" %} alt="like_medal.png" height="20">
+                </a>
+                {% comment %} <a href="{% url "plans:update" plan.pk %}" enctype='multipart/form-data'><button class="btn btn btn-light text-dark mouse fw-bold btn-sm" type="button">수정</button></a> {% endcomment %}
+
+                <a class = 'mx-5' href="{% url "plans:update" plan.pk %}" enctype='multipart/form-data'>
+                    <img src={% static "update.png" %} alt="like_medal.png" height="20">
+                </a>
+                {% comment %} <a href="{% url "plans:delete" plan.pk %}"><button class="btn btn btn-danger mouse fw-bold btn-sm" type="button">삭제</button></a> {% endcomment %}
+                <a class = 'mx-5' href="{% url "plans:delete" plan.pk %}">
+                    <img src={% static "trash.png" %} alt="like_medal.png" height="18">
+                </a>
+            </div>
+
+            
+        </div>
+        {% else %}
+        <div  class='d-flex justify-content-between'>
+            <a href="{% url "plans:index" %}"><button class="btn btn btn-light text-dark mouse fw-bold" id="btn_cursor" type="button">뒤로가기</button></a>
+            <a class = 'mx-5 likeA btn' data-plan-id="{{ plan.pk }}">
+                <img src={% static "like3_img.png" %} alt="like_medal.png" height="20">
+            </a>
+
+        </div>
+        {% endif %}
+        
+        <hr class='border-4'>
+        <div>
+            <h5 id="commentCnt" class='fw-bold text-white font'>댓글 <span id="commentNum">{{ plan.comments.all|length }}</span>개</h5>
+            <form action="{% url "plans:comments_create" plan.pk %}" method="post" class="form-horizontal">
+                {% csrf_token %}                                     
+                <input type="hidden" name="action" value="update">   
+                                  
+                <textarea rows="3" class="form-control" name="comment_content"></textarea>
+
+                <br>
+                  
+                <button class="btn btn-light text-dark mouse fw-bold font " id="btn_cursor" type="submit">댓글 작성</button>
+                
+                </form>
+        </div>
+        <br>
+        <div id="comment-div">
+            
+                {% if plan.comments.all|length %}
+                    {% for comment in plan.comments.all %}
+                        <table id="comment-{{comment.pk}}" class="table table-striped table-bordered table-dark">
+                            <tr>
+                                <td class='col-md-12 d-flex justify-content-between' colspan='2'>
+                                    <div>
+                                        <img src={% static 'Rank/'|add:comment.comment_user.beakjoon_rank|add:'.png' %} width="20" height="20" alt="logo_medal.png" width="10" height="12">&nbsp;{{ comment.comment_user.username }} &nbsp;|&nbsp;
+                                        <img src={% static "like_img.png" %} alt="logo_medal.png" width="15" height="15">&nbsp;<span id="comment-likes-count-{{comment.pk}}">{{ comment.like_comment_users.all|length }}</span>
+                                    </div>
+                                    <div class ='font'>
+                                        <img src={% static "time2_img.png" %} alt="logo_medal.png" width="15" height="15">&nbsp;{{ plan.created_at | date:"Y-m-d H:i" }}&nbsp;&nbsp;
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class='d-flex justify-content-between '>
+                                    <div class='align-self-center'>
+                                        {{ comment.comment_content | linebreaksbr }}
+                                    </div>
+                                    <div class='d-flex'>
+                                        <div class='align-self-center'>
+                                            {% if request.user == comment.comment_user %}
+                                            <a id="commentDelete" data-comment-id="{{ comment.pk }}" data-plan-id="{{ plan.pk }}" href=""><img src={% static "Board/delete.png" %} alt="unlike_img" height="30"></a>
+                                            {% endif %}
+                                            {% if request.user in comment.like_comment_users.all%}
+                                                <a class="commentLike" data-comment-id="{{ comment.pk }}" data-plan-id="{{ plan.pk }}"><img id="imgTag-{{comment.pk}}" src={% static "Board/unlike.png" %} alt="unlike_img" height="30">&nbsp;</a>
+                                            {% else %}
+                                                <a class="commentLike" data-comment-id="{{ comment.pk }}" data-plan-id="{{ plan.pk }}"><img id="imgTag-{{comment.pk}}" src={% static "Board/like.png" %} alt="unlike_img"  height="30">&nbsp;</a>
+                                            {% endif %}
+                                            {% comment %} <a class="commentLike" data-comment-id="{{ comment.pk }}" data-plan-id="{{ plan.pk }}"><img src={% static "Board/like.png" %} alt="unlike_img"  height="30">&nbsp;</a> {% endcomment %}
+                                        </div>
+                                        
+                                    </div>
+                                </td>
+                                
+                            </tr>
+                        </table>    
+                    {% endfor %}
+                {% else %}
+                {% endif %}
+
+            
+
+
+
+
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+
+
+        const formTags = document.querySelector(".likeA")
+        const commentTag = document.querySelectorAll(".commentLike")
+        const commentDeleteTag = document.querySelectorAll("#commentDelete")
+        
+
+        formTags.addEventListener("click", function(event){
+            event.preventDefault()
+            console.log("dddsadasd")
+            const planId = formTags.dataset.planId
+
+            axios({
+                method: "GET",
+                url: `/plans/${planId}/likes/`,
+
+                })
+                .then((response)=>{
+                    const isLiked = response.data.is_liked
+                    const likesCountTag = document.querySelector("#likes-count")
+                    likesCountTag.textContent = response.data.likes_count
+                })
+                .catch((error)=>{
+                    console.log("error")
+                })
+        })
+
+        commentDeleteTag.forEach((commentDeleteTag) => {
+            commentDeleteTag.addEventListener("click", function(event){
+                event.preventDefault()
+                const planId = commentDeleteTag.dataset.planId
+                const commentId = commentDeleteTag.dataset.commentId
+
+                axios({
+                    method: "GET",
+                    url: `/plans/${planId}/comments/${commentId}/delete/`,
+                })
+                .then((response) => {
+                    console.log('ok')
+                    const deleteComment = document.querySelector(`#comment-${commentId}`)
+                    const commentDiv = document.querySelector('#comment-div')
+                    
+                    commentDiv.removeChild(deleteComment)
+
+                    const cntTag = document.querySelector('#commentNum')
+                    const cntTag2 = document.querySelector('#cnt2')
+                    let cnt = parseInt(cntTag.textContent)
+                    let cnt2 = parseInt(cntTag2.textContent)
+                    cnt--
+                    cnt2--
+                    cntTag.textContent = cnt
+                    cntTag2.textContent = cnt2
+
+                    
+                    
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+            })
+        })
+
+
+        commentTag.forEach((commentTag)=>{
+            commentTag.addEventListener("click", function(event){
+                event.preventDefault()
+                const planId = commentTag.dataset.planId
+                const commentId = commentTag.dataset.commentId
+    
+                axios({
+                    method: "GET",
+                    url: `/plans/${planId}/likes/${commentId}/`,
+                })
+                .then((response)=>{
+                    const isCommentLiked = response.data.is_comment_liked
+                    const commentLikesCountTag = document.querySelector(`#comment-likes-count-${commentId}`)
+                    commentLikesCountTag.textContent = response.data.comment_likes_count
+                    console.log(response.data.comment_likes_count)
+                    const imgTag = document.querySelector(`#imgTag-${commentId}`)
+                    if (response.data.is_comment_liked){
+                        console.log("dddddd")
+                        imgTag.setAttribute("src", "{% static "Board/unlike.png" %}")
+                    }
+                    else{
+                        imgTag.setAttribute("src", "{% static "Board/like.png" %}")
+                    }
+
+                    
+                
+                })
+                .catch((error)=>{
+                    console.log("error")
+                })
+            })
+        })
+        
+
+    </script>
+
+{% endblock content %}
+
+

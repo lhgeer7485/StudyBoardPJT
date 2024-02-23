@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% load static %}
+{% block css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <style>
+    .font {
+      font-family: 'Gowun Dodum', sans-serif;
+    }
+
+    .stand {
+        position: absoulute;
+    }
+
+    .standing_img {
+        position: relative;
+        position: absoulute;
+        width: 200px;
+        
+        left: 55px;
+    }
+
+    .profile {
+        position: relative;
+        width: 95.5px;
+        height: 95.5px;
+        border-radius: 50%;
+        top: 11%;
+        right: 90px;
+    }
+
+  </style> 
+{% endblock css %}
+{% block content %}
+
+    <div class="container border bg-dark.bg-gradient p-3 rounded-5 font fw-bold text-white font">
+        <div class="row text-center">
+            {% comment %} 프로필 사진 {% endcomment %}
+            <div class="d-flex justify-content-center">
+                {% comment %} 프로필 사진 경로 추가해야함! {% endcomment %}
+                <img src="{% static "profile_img/astronaut.png" %}" alt="stand_image" class="standing_img img-fluid"> 
+                {% if person.image %}  
+                    <div class="stand text-center">
+                        {% comment %} <img src={% static "profile_img/astronaut.png" %} alt="stand_image" class="standing_img" style="width: 50%; left:15%;"> {% endcomment %}
+                        <img src="{{ person.image.url }}" alt="프로필" class="profile rounded-circle">
+                    </div>
+
+                {% endif %}
+            </div>
+            <h3 class="ms-2 mt-5">{{ person.username }}님</h3>
+            <h5>백준 닉네임 : {{ person.beakjoon_nickname }}</h5>
+            {% comment %} 상단 프로필 배너 {% endcomment %}
+            <div class="d-flex justify-content-center mb-4">
+                {% comment %} <form action="{% url "accounts:update" %}" method='POST'>
+                    {% csrf_token %}
+                    <button type="submit" id="btn_cursor" class="btn btn-outline-light me-3"> 회원정보 수정 </button>
+                </form> {% endcomment %}
+                <form action="{% url "algorithms:solved" person.pk %}" method='GET'>
+                    <button type="submit" id="btn_cursor" class="btn btn-outline-light me-3" > {{ person.username }}님이 푼 문제 </button>
+                </form>
+            </div>
+            <div class="mb-3 d-flex justify-content-around">
+                <p>팔로워 : {{ person.followers.all|length }} </p>
+                <p>팔로잉 : {{ person.followings.all|length }} </P>
+            </div>
+        
+            <div>
+                {% if request.user != person %}
+                    <form action="{% url "accounts:following" person.id %}" method="POST">
+                        {% csrf_token %}
+                        {% if request.user in person.followers.all %}
+                            <input class="btn btn-outline-light me-3 text-white fw-bold" type="submit" value="Unfollow">    
+                        {% else %}
+                            <input class="btn btn-outline-light me-3 text-white fw-bold" type="submit" value="follow">    
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        <hr>
+
+        <div class="">
+            {% comment %} 작성한 게시글 배너 {% endcomment %}
+            <div class="container d-flex justify-content-between ">
+                <div class="row text-center">
+                    <h2 class="col-6 animate__animated animate__headShake text-light font ">Plans post : {{ person.user_plans.all|length }}</h2>
+                    {% comment %} <h5 class="col-6 text-light">{{ person.user_plans.all|length }}개</h5> {% endcomment %}
+                    <h2 class="col-6 animate__animated animate__headShake text-light font ">Issues post : {{ person.user_issues.all|length }}</h2>
+                </div>
+            </div>
+            <div class="container d-flex justify-content-between">
+                <div class="row text-center">
+                    <div class="col-6">
+                        {% for plan in person.user_plans.all %}
+                            <p class="ms-2 mb-2 text-light ">Plan {{ forloop.counter }} post : <a href="{% url "plans:detail" plan.pk %}">{{ plan.title }}</a></p>
+                        {% endfor %}
+                    </div>
+                    <div class="col-6">
+                        {% for issue in person.user_issues.all %}
+                            <p class="ms-2 mb-2 text-light ">Issue {{ forloop.counter }} post : <a href="{% url "issues:detail" issue.pk %}">{{ issue.title }}</a></p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            {% comment %} 작성한 댓글 배너 {% endcomment %}
+            <div class="container d-flex justify-content-between ">
+                <div class="row text-center">
+                    <h2 class="col-6 animate__animated animate__headShake text-light font ">Plan comments : {{ person.plan_comments.all|length }}</h2>
+                    {% comment %} <h5 class="mb-5 me-3 text-light ">{{ person.plan_comments.all|length }}개</h5> {% endcomment %}
+                    <h2 class="col-6 animate__animated animate__headShake text-light font ">issues comments : {{ person.issue_comments.all|length }}</h2>
+                </div>
+            </div>
+            <div class="container d-flex justify-content-between">
+                <div class="row text-center">
+                    <div class="col-6">
+                        {% for comment in person.plan_comments.all %}
+                            <p class="ms-2 me-3 mb-2 text-light ">Plan post "<a href="{% url "plans:detail" comment.plan.pk %}">{{ comment.plan.title }}</a>" comment : {{ comment.comment_content }}</p>
+                        {% endfor %}
+                    </div>
+                    <div class="col-6">
+                        {% for comment in person.issue_comments.all %}
+                            <p class="ms-2 me-3 mb-2 text-light ">Issue post "<a href="{% url "issues:detail" comment.issue.pk %}">{{ comment.issue.title }}</a>" comment : {{ comment.comment_content }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+            {% comment %} <div class="row text-center">
+                <h3>Plans {{ like_cnt }} <img src={% static "like3_img.png" %} alt="like_medal.png" height="20" class="col-6 animate__animated animate__headShake"></h3>
+                <h5 class="mb-5 me-3  text-light">{{ like_cnt }}개</h5>
+                <h3>Issues {{ like_cnt }} <img src={% static "like3_img.png" %} alt="like_medal.png" height="20" class="col-6 animate__animated animate__headShake"></h3>
+            </div> {% endcomment %}
+
+            {% comment %} 좋아요 누른 게시글 배너 {% endcomment %}
+            <div class="container d-flex justify-content-between ">
+                <div class="row text-center">
+                    <div class="col-6">
+                    <h2>Plans LIKE : {{ like_cnt }}</h2>
+                        {% for plan in person.like_plans.all %}
+                            <p class="text-light">당신이 "<a href="{% url "plans:detail" plan.pk %}">{{ plan.title }}</a>" 글에 좋아요를 눌렀습니다. ❤</p>
+                        {% endfor %}
+                        {% for plan in person.user_plans.all  %}
+                            {% for like_user in plan.like_users.all  %}
+                                <p class="text-light">"<a href="{% url "accounts:profile" like_user.pk %}">{{ like_user.username }}</a>" 님이 당신의 "<a href="{% url "plans:detail" plan.pk %}">{{ plan.title }}</a>" 글을 좋아합니다. ❤ </p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>  
+                    {% comment %} <h5 class="mb-5 me-3  text-light">{{ like_cnt }}개</h5> {% endcomment %}
+                    <div class="col-6">
+                    <h2>Issues LIKE : {{ like_cnt2 }}</h2>
+                        {% for issue in person.like_issues.all %}
+                            <p class="text-light">당신이 "<a href="{% url "issues:detail" issue.pk %}">{{ issue.title }}</a>" 글에 좋아요를 눌렀습니다. ❤</p>
+                        {% endfor %}
+                        {% for issue in person.user_issues.all  %}
+                            {% for like_user in issue.like_users.all  %}
+                                <p class="text-light">"<a href="{% url "accounts:profile" like_user.pk %}">{{ like_user.username }}</a>" 님이 당신의 "<a href="{% url "issues:detail" issue.pk %}">{{ issue.title }}</a>" 글을 좋아합니다. ❤ </p>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% comment %} test {% endcomment %}
+{% comment %} left_my profile {% endcomment %}
+{% comment %} <div class='container border border-2 border-light rounded-5 p-3 my-2 border-opacity-75 '>
+    <div class='row mx-2'>
+        <div class='col-4'>
+            <div class="border border-2 border-light rounded-5 p-3 m-2 border-opacity-75 " >
+              <h2 class="mx-5 card-title lh-lg text-light font">My profile </h2>
+              <br>
+                <br>
+                    
+                    <div class="row text-center"> {% endcomment %}
+                        {% comment %} 프로필 사진 {% endcomment %}
+                        {% comment %} <div class="d-flex justify-content-center"> {% endcomment %}
+                            {% comment %} 프로필 사진 경로 추가해야함! {% endcomment %}
+                            {% comment %} {% if request.user.image %}  
+                                <div class="stand text-center">
+                                    <img src="{% static "profile_img/astronaut.png" %}" alt="stand_image"class="standing_img img-fluid">  {% endcomment %}
+                                    {% comment %} <img src={% static "profile_img/astronaut.png" %} alt="stand_image" class="standing_img" style="width: 50%; left:15%;"> {% endcomment %}
+                                    {% comment %} <img src="{{ request.user.image.url }}" alt="프로필" class="profile rounded-circle">
+                                </div> {% endcomment %}
+                            {% comment %} {% else %} {% endcomment %}
+                            {% comment %} {% endif %}
+                        </div>
+                        <h3 class="ms-2 font text-white">{{ person.username }}님</h3>  {% endcomment %}
+                        {% comment %} 상단 프로필 배너 {% endcomment %}
+                        {% comment %} <div class="d-flex justify-content-center mb-4">
+                            <form action="{% url "accounts:update" %}" method='POST'>
+                                {% csrf_token %}
+                                <button type="submit" id="btn_cursor" class="btn btn-outline-light me-3"> 회원정보 수정 </button>
+                            </form>
+                            <form action="#" method='POST'>
+                                {% csrf_token %}
+                                <button type="submit" id="btn_cursor" class="btn btn-outline-light me-3"> 내가 푼 문제 </button>
+                            </form> {% endcomment %}
+                            {% comment %} <form action="#" method='POST'>
+                                {% csrf_token %}
+                                <button type="submit" id="btn_cursor" class="btn btn-outline-light me-3"> 뭔가 넣을 곳 </button>
+                            </form> {% endcomment %}
+                        {% comment %} </div>
+                        <div class="mb-3 d-flex justify-content-around text-white">
+                            <p class='text-white'>팔로워 : {{ person.followers.all|length }} </p>
+                            팔로잉 : {{ person.followings.all|length }}
+                        </div>
+                    
+                        <div>
+                            {% if request.user != person %}
+                            <div>
+                                <form action="{% url "accounts:follow" person.pk %}" method="POST">
+                                {% csrf_token %}
+                                {% if request.user in person.followers.all %}
+                                    <input type="submit" value="Unfollow">
+                                {% else %}
+                                    <input type="submit" value="Follow">
+                                {% endif %}
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+            </div>
+          </div> {% endcomment %}
+{% comment %} right_my content {% endcomment %}
+          {% comment %} <div class='col-8'>
+            <div class="border border-2 border-light rounded-5 p-3 m-2 border-opacity-75 ">
+              <h2 class="mx-5 card-title lh-lg text-light font">My Content </h2>
+              <br>
+                <div class="row border border-2 border-light rounded-5 p-3 my-2 border-opacity-75 mx-5">
+                <br> {% endcomment %}
+                    {% comment %} 작성한 게시글 배너 {% endcomment %}
+                    {% comment %} <div class="text-light font">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="mb-5 ms-3 animate__animated animate__headShake">Posts</h3>
+                            <h5 class="mb-5 me-3">{{ person.main_set.all|length }}개</h5>
+                            {% for article in person.main_set.all %}
+                                <p class="ms-4 mb-2">{{ article.pk }} post : {{ article.title }}</p>
+                            {% endfor %}
+                        </div>
+                        <hr> {% endcomment %}
+
+                        {% comment %} 작성한 댓글 배너 {% endcomment %}
+                        {% comment %} <div class="d-flex justify-content-between">
+                            <h3 class="mb-5 ms-3 animate__animated animate__headShake">Comments</h3>
+                            <h5 class="mb-5 me-3">{{ person.comment_set.all|length }}개</h5>
+                            {% for comment in person.comment_set.all %}
+                                <p class="ms-4 mb-2">comment in "{{ article.title }}" : {{ comment.content }}</p>
+                            {% endfor %}
+                        </div>
+                        <hr> {% endcomment %}
+
+                        {% comment %} 좋아요 누른 게시글 배너 {% endcomment %}
+                        {% comment %} <div class="d-flex justify-content-between">
+                            <img src={% static "like3_img.png" %} alt="like_medal.png" height="20" class="mb-5 ms-3 animate__animated animate__headShake"> {% endcomment %}
+                            {% comment %} <h3 class="mb-5 ms-4 animate__animated animate__headShake"> ❤ </h3> {% endcomment %}
+                            {% comment %} <h5 class="mb-5 me-3">{{ person.like_articles.all|length }}개</h5>
+                            {% for article in person.like_articles.all %}
+                                <p class="ms-4 mb-2">like this : {{ article.title }}</p>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>  
+            </div>
+          </div>
+    </div>
+</div> {% endcomment %}
+{% endblock content %}

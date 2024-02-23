@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block css %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  <style>
+    .font {
+      font-family: 'Gowun Dodum', sans-serif;
+    }
+  </style>
+  {% endblock css %}
+
+{% block content %}
+{% comment %} <h1>PLAN UPDATE PAGE</h1>
+<form action="{% url "plans:update" plan.pk %}" method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit">
+</form>
+<hr>
+<a href="{% url 'plans:index' %}">[back]</a> {% endcomment %}
+
+<div class='container'>
+  <form action="{% url "plans:update" plan.pk %}" method="post" class="form-horizontal" enctype='multipart/form-data'>
+    {% csrf_token %}                                     
+    <input type="hidden" name="action" value="update">   
+    <table class="table table-striped table-bordered table-dark">
+      <tr>
+        <th class='align-middle'>제목</th>                                    
+        <td><input type="text" class="form-control" name="title" value="{{ plan.title }}"></td>
+      </tr>
+      <tr>
+        <th>작성자</th>                                   
+        <td>{{ request.user }}</td>
+      </tr>
+      <tr>
+        <th>등록일</th>
+        <td>{{ plan.created_at | date:"Y-m-d H:i" }}</td>
+      </tr>
+      <tr>
+        <th>수정일</th>
+        <td>{{ plan.updated_at | date:"Y-m-d H:i" }}</td>
+      </tr>
+      <tr>
+        <th class='align-middle'>사진 업로드</th>                                    
+        <td><input type="file" rows="10" class="form-control" name="image"></input></td>
+      </tr>
+      <tr>
+        <th class='align-middle'>내용</th>                                    
+        <td><textarea rows="10" class="form-control" name="content">{{ plan.content }}</textarea></td>
+      </tr>
+    </table>
+    <div class='d-flex justify-content-between'>
+      <a href="{% url "plans:index" %}"><button class="btn btn btn-light text-dark mouse fw-bold" type="button">뒤로가기</button></a>
+      <button class="btn btn-light text-dark mouse fw-bold" id="btn_cursor" type="submit">저장</button>
+    </div>
+    
+    </form>
+
+</div>
+
+{% endblock content %}
+

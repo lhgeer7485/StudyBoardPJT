@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+<link rel="stylesheet" href={% static "codemirror/rib/codemirror.css" %}>
+    <script src={% static "codemirror/rib/codemirror.js" %}></script>
+    <script src={% static "codemirror/mode/python/python.js" %}></script>
+    <link rel="stylesheet" href={% static "/codemirror/theme/cobalt.css" %}>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      :root {
+        --bg: #3C465C;
+        --primary: #78FFCD;
+        --solid: #fff;
+        --btn-w: 10em;
+        --dot-w: calc(var(--btn-w)*.2);
+        --tr-X: calc(var(--btn-w) - var(--dot-w));
+      }
+      * {box-sizing: border-box;}
+      *:before, *:after {box-sizing: border-box;}
+      
+      
+      .btn_h1 {
+        color: var(--solid);
+        font-size: 2.5rem;
+        margin-top: 6rem; 
+      }
+      .new_btn {
+        position: relative;
+        margin: 0 auto;
+        width: var(--btn-w);
+        color: var(--primary);
+        border: .15em solid var(--primary);
+        border-radius: 5em;
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 1.3em;
+        line-height: 2em;
+        cursor: pointer;  
+      }
+      .dot {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: var(--dot-w);
+        height: 100%;
+        border-radius: 100%;
+        transition: all 300ms ease;
+        display: none;
+      }
+      .dot:after {
+        content: '';
+        position: absolute;
+        left: calc(50% - .4em);
+        top: -.4em;
+        height: .8em;
+        width: .8em;
+        background: var(--primary);
+        border-radius: 1em;
+        border: .25em solid var(--solid);
+        box-shadow: 0 0 .7em var(--solid),
+              0 0 2em var(--primary);
+      }
+      .new_btn:hover .dot,
+      .new_btn:focus .dot {
+        animation: atom 2s infinite linear;
+        display: block;
+      }
+      @keyframes atom {
+        0% {transform: translateX(0) rotate(0);}
+        30%{transform: translateX(var(--tr-X)) rotate(0);}
+        50% {transform: translateX(var(--tr-X)) rotate(180deg);}
+        80% {transform: translateX(0) rotate(180deg);}
+        100% {transform: translateX(0) rotate(360deg);}
+      }
+        .rocketSizing {
+            width: 100px;
+            height: 100px;
+        }
+        .CodeMirror-sizer {
+            margin-left: 30px;
+        }
+        .font {
+            color: white;
+            
+        }
+        hr {
+            color: white;
+ 
+        }
+        .hide {
+            display: none;
+        
+        }
+        .myCustomMargin .CodeMirror {
+            margin-left: 20px;
+        }
+    </style>
+{% endblock css %}
+{% block content %}
+<div class='container border bg-dark.bg-gradient p-3 rounded-5'>
+<div class='font'>
+  <div class="d-flex justify-content-between">
+    <div>
+    <h1 style="display: inline-block; margin-left:20px;">{{challenge.title}}</h1>
+  </div>
+    <div class="new_btn" style='display: inline-block;margin: 0; margin-right: 50px;'>
+      <a href="https://www.acmicpc.net/problem/{{challenge.problem}}" style="text-decoration: none; color: #78FFCD; "><span>문제 풀러 가기</span></a>
+    <div class="dot"></div> </div>
+  </div>
+    <hr>
+</div>
+<div class='font'>
+    <h2>문제번호 : {{challenge.problem}}</h2>
+</div>
+<div class='font'>
+    <h2>난이도 : {{challenge.rank}}</h2>
+</div>
+<a class="btn btn-primary" href="{% url "challenges:code" challenge.pk%}" role="button" style="width:150px">Make Code</a>
+</div>
+<hr >
+<div class='container'>
+    
+    
+    {% for code in codes %}
+    <div class="card text-bg-dark">
+        <div class="card-header text-bg-dark">
+          {{code.created_at}} 작성
+        </div>
+        <div class="card-body text-bg-dark">
+          <h5 class="card-title text-bg-dark"><img src="../../../static/Rank/{{code.author.beakjoon_rank}}.png" widht='30' height='32' alt="">&nbsp; {{code.author.username}}님의 작성 코드</h5>
+          <p></p>
+          <a href="{% url "challenges:watch" code.pk%}" class="btn btn-dark border border-light p-2"><i class="fa-solid fa-laptop-code fa-fade fa-2xl" style="color: #f2020a; height:18px;"></i>&nbsp; Watch Code</a>
+        </div>
+      </div>
+    <br>
+    {% endfor %}
+</div>
+    <br>
+    <nav aria-label="Page navigation example" >
+        <div class="">
+          <ul class="pagination justify-content-center ">
+            {% if codes.has_previous %}
+              <li class="page-item">
+                <a class="page-link text-secondary bg-dark border-0" href="?page={{ codes.previous_page_number }}">&laquo;</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link text-secondary bg-dark border-0" href="#" tabindex="-1" aria-disabled="True">&laquo;</a>
+              </li>
+            {% endif %}
+            {% for i in codes.paginator.page_range %}
+              {% if codes.number == i %}
+                <li class="page-item active text-light bg-dark border-0" aria-current="page">
+                  <span class="page-link text-light bg-dark border-0">
+                    {{ i }}
+                    <span class="sr-only"></span>
+                  </span>
+                </li>
+              {% else %}
+                <li class="page-item text-secondary bg-dark border-0"><a class="page-link text-secondary bg-dark border-0" href="?page={{ i }}">{{ i }}</a></li>
+              {% endif %}
+            {% endfor %}
+            {% if codes.has_next %}
+              <li class="page-item">
+                <a class="page-link text-secondary bg-dark border-0" href="?page={{ codes.next_page_number }}">&raquo;</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link text-secondary bg-dark border-0" href="#" tabindex="-1" aria-disabled="True">&raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+</div>
+
+<script>
+    const codeMirrors = document.querySelectorAll('#editor')
+    for(codemirror of codeMirrors){
+    var editor = CodeMirror.fromTextArea(
+            codemirror,{
+                mode: 'python',
+                theme: 'cobalt',
+                lineNumbers: true,
+               
+                
+            }
+        )
+        const btn = document.querySelector('.btn')
+        btn.addEventListener('click',()=>{
+            if ('hide' in editor.classList){
+                editor.classList.remove('hide')
+            }
+            else {editor.classList.add('hide')}
+        })
+        }
+       
+</script>
+{% endblock content %}
+
